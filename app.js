@@ -5,6 +5,7 @@ require("./db/conn");
 const app=express();
 const port=process.env.PORT||3000
 const Registration=require("./models/login");
+const { sign } = require("crypto");
 const staticpath=path.join(__dirname+"/public");
 const viewpath=path.join(__dirname+"/templates/views");
 const partialpath=path.join(__dirname+"/templates/partials");
@@ -49,6 +50,30 @@ else{
         res.send(e);
     }
 })
+
+
+app.post("/login",async(req,res)=>{
+
+    try{
+const name=req.body.login_username;
+const password=req.body.login_password;
+
+const database=await Registration.findOne({Username:name});
+
+if(database.Password===password){
+    res.render("login");
+}
+else{
+    res.send("Error Invalid Credentials")
+}
+
+    }
+    catch(e){
+res.send("ERROR Invalid Credentials ");
+    }
+})
+
+
 app.listen(port,()=>{
     console.log(`connection is started at port ${port}`);
 })
