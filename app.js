@@ -2,8 +2,9 @@ const express=require("express");
 const path=require("path");
 const hbs=require("hbs");
 require("./db/conn");
+const bcrypt= require("bcrypt");
 const app=express();
-const port=process.env.PORT||3000
+const port=process.env.PORT||3000;
 const Registration=require("./models/login");
 const { sign } = require("crypto");
 const staticpath=path.join(__dirname+"/public");
@@ -19,8 +20,6 @@ app.get("/",(req,res)=>{
     res.render("index");
 })
 app.use(express.json());
-
-
 app.post("/register",async(req,res)=>{
     
     try{
@@ -59,8 +58,8 @@ const name=req.body.login_username;
 const password=req.body.login_password;
 
 const database=await Registration.findOne({Username:name});
-
-if(database.Password===password){
+const ismatch=bcrypt.compare(password,database.Password);
+if(ismatch){
     res.render("login");
 }
 else{
